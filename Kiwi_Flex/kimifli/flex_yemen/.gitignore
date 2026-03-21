@@ -1,0 +1,21 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+pubspec.lock
+build/
+.gradle/
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/local.properties
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Generated.xcconfig
+.env
+keys/
+*.log

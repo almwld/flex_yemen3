@@ -1,0 +1,67 @@
+workflows:
+  flex-yemen:
+    name: Flex Yemen Build
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      xcode: latest
+      vars:
+        APP_NAME: "Flex Yemen"
+        APP_VERSION: "1.0.0"
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+    scripts:
+      - name: تثبيت الاعتماديات
+        script: |
+          flutter pub get
+          flutter pub run flutter_launcher_icons:main || true
+      - name: التحقق من صحة الكود
+        script: |
+          flutter analyze || true
+          dart format --set-exit-if-changed lib || true
+      - name: بناء Android (APK)
+        script: |
+          flutter build apk --release --split-per-abi
+          echo "✅ Android APK built successfully"
+      - name: بناء Android (App Bundle)
+        script: |
+          flutter build appbundle --release
+          echo "✅ Android App Bundle built successfully"
+      - name: بناء iOS
+        script: |
+          flutter build ios --release --no-codesign
+          echo "✅ iOS build completed"
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/bundle/release/*.aab
+      - build/ios/iphoneos/*.app
+      - build/ios_archive/*.xcarchive
+    publishing:
+      github:
+        provider: github
+        repository: almwld/Kimifli
+        tag: v1.0.0-\$BUILD_NUMBER
+        release:
+          name: Flex Yemen \$BUILD_NUMBER
+          description: |
+            ### تحديثات جديدة:
+            - إصلاح مشكلة الشاشة السوداء
+            - تحسين الاتصال بقاعدة البيانات
+            - إضافة شاشة Offline
+            - تحسين الأداء العام
+          draft: false
+          prerelease: false
+          artifacts:
+            - build/app/outputs/flutter-apk/*.apk
+            - build/app/outputs/bundle/release/*.aab
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: main
+          include: true
+        - pattern: develop
+          include: true
+      cancel_previous_builds: true
